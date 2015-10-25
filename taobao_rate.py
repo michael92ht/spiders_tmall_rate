@@ -6,7 +6,7 @@ import requests
 import json
 import re
 
-#  ¸ù¾İÌìÃ¨ÉÌÆ·µÄÏêÇéÒ³Ãæurl,´ò¿ªÆäÔ´´úÂë£¬Ñ°ÕÒÉÌÆ·µÄÈı¸öÊôĞÔ
+#  æ ¹æ®å¤©çŒ«å•†å“çš„è¯¦æƒ…é¡µé¢url,æ‰“å¼€å…¶æºä»£ç ï¼Œå¯»æ‰¾å•†å“çš„ä¸‰ä¸ªå±æ€§
 def get_ids_from_url(url):
 
     flag = True
@@ -24,28 +24,28 @@ def get_ids_from_url(url):
             pass
 
 
-# ²éÑ¯ËùÓĞpageÊıÁ¿
+# æŸ¥è¯¢æ‰€æœ‰pageæ•°é‡
 def get_total_page(ids):
     url = r'https://rate.tmall.com/list_detail_rate.htm? %s&%s&%s'%(ids[0], ids[1], ids[2])
-    req = requests.get(url+'&currentPage=100000000', verify=False)  # È¡Ò»¸ö¼«´óÊı10000000£¬È¥ÊÔÌ½×îºóÒ»¸öÒ³ÃæµÄÖµ
-    data = req.text[15:]            # É¾³ıÒ³ÃæÄÚÈİµÄÇ°14¸ö×Ö·û£¬ÎªÁËÏÂÒ»²½¿ÉÒÔ×ªÎªjson ¸ñÊ½ÎÄ¼ş
+    req = requests.get(url+'&currentPage=100000000', verify=False)  # å–ä¸€ä¸ªæå¤§æ•°10000000ï¼Œå»è¯•æ¢æœ€åä¸€ä¸ªé¡µé¢çš„å€¼
+    data = req.text[15:]            # åˆ é™¤é¡µé¢å†…å®¹çš„å‰14ä¸ªå­—ç¬¦ï¼Œä¸ºäº†ä¸‹ä¸€æ­¥å¯ä»¥è½¬ä¸ºjson æ ¼å¼æ–‡ä»¶
     jsondata = json.loads(data)
-    total_page = jsondata["paginator"]["lastPage"]      #×îºóÒ»¸öÒ³ÃæÒÔºóµÄÒ³ÃæµÄÄÚÈİÖĞ£¬lastPageÖµ¼´Îª×î´óÖµ
+    total_page = jsondata["paginator"]["lastPage"]      #æœ€åä¸€ä¸ªé¡µé¢ä»¥åçš„é¡µé¢çš„å†…å®¹ä¸­ï¼ŒlastPageå€¼å³ä¸ºæœ€å¤§å€¼
     return total_page
 
-# ²éÑ¯Ö¸¶¨Ò³ÃæµÄÆÀÂÛ
+# æŸ¥è¯¢æŒ‡å®šé¡µé¢çš„è¯„è®º
 def get_rate_from_index(ids, index):
 
     f = codecs.open(r'd:\text.txt','a','utf-8')
     url = r'https://rate.tmall.com/list_detail_rate.htm? %s&%s&%s'%(ids[0], ids[1], ids[2])
-    rate_url = url + r"&currentPage=%d"%(index)     #  ÌìÃ¨ÉÌÆ·ÆÀ¼ÛÒ³Ãæ´æ´¢µÄurl
+    rate_url = url + r"&currentPage=%d"%(index)     #  å¤©çŒ«å•†å“è¯„ä»·é¡µé¢å­˜å‚¨çš„url
     #print rate_url
     f.write(rate_url)
     f.write('\n')
     req = requests.get(rate_url, verify=False)
-    data = req.text[15:]            # É¾³ıÒ³ÃæÄÚÈİµÄÇ°14¸ö×Ö·û£¬ÎªÁËÏÂÒ»²½¿ÉÒÔ×ªÎªjson ¸ñÊ½ÎÄ¼ş
+    data = req.text[15:]            # åˆ é™¤é¡µé¢å†…å®¹çš„å‰14ä¸ªå­—ç¬¦ï¼Œä¸ºäº†ä¸‹ä¸€æ­¥å¯ä»¥è½¬ä¸ºjson æ ¼å¼æ–‡ä»¶
     jsondata = json.loads(data)
-    rateList = jsondata["rateList"]  # »ñÈ¡ÆÀÂÛÁĞ±í
+    rateList = jsondata["rateList"]  # è·å–è¯„è®ºåˆ—è¡¨
     for item in rateList:
         print "Comment: " ,item["rateContent"] 
         f.write(item["rateContent"])
@@ -57,16 +57,16 @@ def get_rate_from_index(ids, index):
     f.close()
 
 
-# ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ
+# æ ¹æ®å•†å“çš„å±æ€§å€¼å’Œé¡µé¢æ•°é‡ï¼Œå¯¹å•†å“çš„æ‰€æœ‰è¯„è®ºè¿›è¡Œçˆ¬è™«
 def get_rate(ids, total_page):
-    error_page = []  # ÓÉÓÚ»áËæ»ú³öÏÖ´íÎó£¬µ¼ÖÂ²¿·ÖÒ³ÃæÎŞ·¨»ñÈ¡£¬ÓÃÀ´¼ÇÂ¼³öÏÖ´íÎóµÄÒ³Ãæ
-    for index in range(1,total_page+1):  # ËùÓĞµÄÒ³ÃæµÄÆÀÂÛÄÚÈİ½øĞĞÌáÈ¡
+    error_page = []  # ç”±äºä¼šéšæœºå‡ºç°é”™è¯¯ï¼Œå¯¼è‡´éƒ¨åˆ†é¡µé¢æ— æ³•è·å–ï¼Œç”¨æ¥è®°å½•å‡ºç°é”™è¯¯çš„é¡µé¢
+    for index in range(1,total_page+1):  # æ‰€æœ‰çš„é¡µé¢çš„è¯„è®ºå†…å®¹è¿›è¡Œæå–
         try:
             get_rate_from_index(ids, index)
-        except Exception,ex:               # Èô´ËÒ³ÃæÎŞ·¨ÌáÈ¡£¬¼ÇÂ¼µ½ error_pageÖĞ
+        except Exception,ex:               # è‹¥æ­¤é¡µé¢æ— æ³•æå–ï¼Œè®°å½•åˆ° error_pageä¸­
             error_page.append(index)
 
-    while len(error_page) != 0:             # Èç¹ûÓĞÎ´ÌáÈ¡µÄÒ³Ãæ£¬¾ÍÒ»Ö±ÌáÈ¡¸ÃÒ³Ãæ£¬Ö±ÖÁ error_pageÎª0
+    while len(error_page) != 0:             # å¦‚æœæœ‰æœªæå–çš„é¡µé¢ï¼Œå°±ä¸€ç›´æå–è¯¥é¡µé¢ï¼Œç›´è‡³ error_pageä¸º0
         pages = [i for i in error_page]
         error_page = []
         for page in pages:
@@ -85,7 +85,3 @@ if __name__ == "__main__":
     ids = get_ids_from_url(url)
     total = get_total_page(ids)
     get_rate(ids, total)
-    #get_rate_from_index(ids, 75)
-    #f = open(r'd:\text.txt','a')
-    #f.write('huang'+'»ÆÌÎ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ¸ù¾İÉÌÆ·µÄÊôĞÔÖµºÍÒ³ÃæÊıÁ¿£¬¶ÔÉÌÆ·µÄËùÓĞÆÀÂÛ½øĞĞÅÀ³æ')
-
